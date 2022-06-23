@@ -893,8 +893,8 @@
         const course = $(this).val();
         const formValue = getFormValue();
 
-        $('#stamina').val(formValue.stamina + formValue.inTable.workStaminaCost[course] * formValue.inTable.staminaCostMultiplier[course]);
-        $('#liveTickets').val(formValue.liveTickets - formValue.inTable.workStaminaCost[course] * formValue.inTable.staminaCostMultiplier[course]);
+        $('#stamina').val(formValue.stamina + formValue.inTable.workStaminaCost[course] * formValue.staminaCostMultiplier);
+        $('#liveTickets').val(formValue.liveTickets - formValue.inTable.workStaminaCost[course] * formValue.staminaCostMultiplier);
 
         calculate();
     });
@@ -903,11 +903,11 @@
         const course = $(this).val();
         const formValue = getFormValue();
 
-        if (formValue.liveTickets + formValue.inTable.workStaminaCost[course] * formValue.inTable.staminaCostMultiplier[course] > 500) {
+        if (formValue.liveTickets + formValue.inTable.workStaminaCost[course] * formValue.staminaCostMultiplier > 500) {
             if (
                 confirm(
                     `ライブチケットが${
-                        formValue.liveTickets + formValue.inTable.workStaminaCost[course] * formValue.inTable.staminaCostMultiplier[course] - 500
+                        formValue.liveTickets + formValue.inTable.workStaminaCost[course] * formValue.staminaCostMultiplier - 500
                     }枚超過します。\n超過分は加算されません。\n実行しますか？`
                 )
             ) {
@@ -916,12 +916,10 @@
                 return;
             }
         } else {
-            $('#liveTickets').val(
-                formValue.liveTickets + formValue.inTable.workStaminaCost[course] * formValue.inTable.staminaCostMultiplier[course]
-            );
+            $('#liveTickets').val(formValue.liveTickets + formValue.inTable.workStaminaCost[course] * formValue.staminaCostMultiplier);
         }
 
-        $('#stamina').val(formValue.stamina - formValue.inTable.workStaminaCost[course] * formValue.inTable.staminaCostMultiplier[course]);
+        $('#stamina').val(formValue.stamina - formValue.inTable.workStaminaCost[course] * formValue.staminaCostMultiplier);
 
         calculate();
     });
