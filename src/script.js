@@ -129,10 +129,18 @@
         }
         validFiniteNumber('idolRemaining');
 
-        formValue.workStaminaCost = Number($('[name="workStaminaCost"]:checked').val());
-        formValue.staminaCostMultiplier = Number($('[name="staminaCostMultiplier"]:checked').val());
-        formValue.ticketCostMultiplier = Number($('#ticketCostMultiplier').val());
-        formValue.itemsCostMultiplier = Number($('[name="itemsCostMultiplier"]:checked').val());
+        formValue.workStaminaCost = Number(
+            $('[name="workStaminaCost"]:checked').val()
+        );
+        formValue.staminaCostMultiplier = Number(
+            $('[name="staminaCostMultiplier"]:checked').val()
+        );
+        formValue.ticketCostMultiplier = Number(
+            $('#ticketCostMultiplier').val()
+        );
+        formValue.itemsCostMultiplier = Number(
+            $('[name="itemsCostMultiplier"]:checked').val()
+        );
         formValue.showCourse = $('[name="showCourse"]:checked')
             .map((i) => {
                 return $('[name="showCourse"]:checked').eq(i).val();
@@ -145,16 +153,26 @@
         formValue.inTable.ticketCostMultiplier = {};
         formValue.inTable.itemsCostMultiplier = {};
         Object.keys(staminaCost).forEach((course) => {
-            formValue.inTable.workStaminaCost[course] = Number($(`[name="workStaminaCost${course}"]:checked`).val());
-            formValue.inTable.staminaCostMultiplier[course] = Number($(`[name="staminaCostMultiplier${course}"]:checked`).val());
-            formValue.inTable.ticketCostMultiplier[course] = Number($(`[name="ticketCostMultiplier${course}"]:checked`).val());
-            formValue.inTable.itemsCostMultiplier[course] = Number($(`[name="itemsCostMultiplier${course}"]:checked`).val());
+            formValue.inTable.workStaminaCost[course] = Number(
+                $(`[name="workStaminaCost${course}"]:checked`).val()
+            );
+            formValue.inTable.staminaCostMultiplier[course] = Number(
+                $(`[name="staminaCostMultiplier${course}"]:checked`).val()
+            );
+            formValue.inTable.ticketCostMultiplier[course] = Number(
+                $(`[name="ticketCostMultiplier${course}"]:checked`).val()
+            );
+            formValue.inTable.itemsCostMultiplier[course] = Number(
+                $(`[name="itemsCostMultiplier${course}"]:checked`).val()
+            );
         });
 
         $('.error').remove();
         if (errors.length) {
             errors.forEach((error) => {
-                $(`#${error.field}`).after(`<span class="error">${error.message}</span>`);
+                $(`#${error.field}`).after(
+                    `<span class="error">${error.message}</span>`
+                );
             });
             return null;
         }
@@ -169,61 +187,91 @@
         }
         $('#diffEnd').text(`(あと ${diffEnd.toLocaleString()} pt)`);
 
-        $('#labelToday').text(`${dayjs.unix(formValue.endOfTodayUnix).format('M/D')}の目標`);
+        $('#labelToday').text(
+            `${dayjs.unix(formValue.endOfTodayUnix).format('M/D')}の目標`
+        );
 
         const targetToday = Math.round(
-            (formValue.targetEnd * (formValue.endOfTodayUnix - formValue.datetimeStartUnix)) /
+            (formValue.targetEnd *
+                (formValue.endOfTodayUnix - formValue.datetimeStartUnix)) /
                 (formValue.datetimeEndUnix - formValue.datetimeStartUnix)
         );
         let diffToday = targetToday - formValue.ownPoints;
         if (diffToday < 0) {
             diffToday = 0;
         }
-        $('#targetToday').text(`${targetToday.toLocaleString()} pt (あと ${diffToday.toLocaleString()} pt)`);
+        $('#targetToday').text(
+            `${targetToday.toLocaleString()} pt (あと ${diffToday.toLocaleString()} pt)`
+        );
 
-        $('#labelNow').text(`${dayjs.unix(formValue.nowUnix).format('M/D H:mm')}の目標`);
+        $('#labelNow').text(
+            `${dayjs.unix(formValue.nowUnix).format('M/D H:mm')}の目標`
+        );
 
         const targetNow = Math.round(
-            (formValue.targetEnd * (formValue.nowUnix - formValue.datetimeStartUnix)) / (formValue.datetimeEndUnix - formValue.datetimeStartUnix)
+            (formValue.targetEnd *
+                (formValue.nowUnix - formValue.datetimeStartUnix)) /
+                (formValue.datetimeEndUnix - formValue.datetimeStartUnix)
         );
         let diffNow = targetNow - formValue.ownPoints;
         if (diffNow < 0) {
             diffNow = 0;
         }
-        $('#targetNow').text(`${targetNow.toLocaleString()} pt (あと ${diffNow.toLocaleString()} pt)`);
+        $('#targetNow').text(
+            `${targetNow.toLocaleString()} pt (あと ${diffNow.toLocaleString()} pt)`
+        );
     }
 
     // ログインボーナスを考慮
     function calculateLoginBonus(formValue) {
         const loginBonusPerDay = 540;
-        let loginBonus = dayjs.unix(formValue.datetimeEndUnix).endOf('d').diff(dayjs.unix(formValue.nowUnix), 'd') * loginBonusPerDay;
+        let loginBonus =
+            dayjs
+                .unix(formValue.datetimeEndUnix)
+                .endOf('d')
+                .diff(dayjs.unix(formValue.nowUnix), 'd') * loginBonusPerDay;
         if (formValue.isFuture) {
             loginBonus += loginBonusPerDay;
         }
-        $('#loginBonus').text(`+ ログインボーナス ${loginBonus.toLocaleString()} 個`);
+        $('#loginBonus').text(
+            `+ ログインボーナス ${loginBonus.toLocaleString()} 個`
+        );
         formValue.loginBonus = loginBonus;
 
         const loginBonusDicesPerDay = 2;
-        let loginBonusDices = dayjs.unix(formValue.datetimeEndUnix).endOf('d').diff(dayjs.unix(formValue.nowUnix), 'd') * loginBonusDicesPerDay;
+        let loginBonusDices =
+            dayjs
+                .unix(formValue.datetimeEndUnix)
+                .endOf('d')
+                .diff(dayjs.unix(formValue.nowUnix), 'd') *
+            loginBonusDicesPerDay;
         if (formValue.isFuture) {
             loginBonusDices += loginBonusDicesPerDay;
         }
-        $('#loginBonusDices').text(`+ ログインボーナス ${loginBonusDices.toLocaleString()} 個`);
+        $('#loginBonusDices').text(
+            `+ ログインボーナス ${loginBonusDices.toLocaleString()} 個`
+        );
         formValue.loginBonusDices = loginBonusDices;
 
-        $('#eventBonus').text(`(pt獲得ボーナス ×${formValue.eventBonus.toFixed(1)})`);
+        $('#eventBonus').text(
+            `(pt獲得ボーナス ×${formValue.eventBonus.toFixed(1)})`
+        );
 
         $('#expectedPoints').text(
             `(アイテム消費後 ${(
                 formValue.ownPoints +
-                Math.ceil(earnPointsPerEvent * formValue.eventBonus) * Math.floor(formValue.ownItems / consumedItemsPerEvent)
+                Math.ceil(earnPointsPerEvent * formValue.eventBonus) *
+                    Math.floor(formValue.ownItems / consumedItemsPerEvent)
             ).toLocaleString()} pt)`
         );
     }
 
     // コース毎の計算
     function calculateByCouse(course, formValue, result, minCost) {
-        if (formValue.showCourse.length && formValue.showCourse.indexOf(course) === -1) {
+        if (
+            formValue.showCourse.length &&
+            formValue.showCourse.indexOf(course) === -1
+        ) {
             // 表示コースでなければ計算しない
             return;
         }
@@ -251,7 +299,8 @@
 
         // 通常楽曲回数、イベント楽曲回数を計算
         while (
-            formValue.targetEnd > formValue.ownPoints + liveEarnedPoints + eventEarnedPoints ||
+            formValue.targetEnd >
+                formValue.ownPoints + liveEarnedPoints + eventEarnedPoints ||
             formValue.mission > eventTimes ||
             sugorokuTarget > moveSteps
         ) {
@@ -273,7 +322,9 @@
                         bonusLiveRemaining--;
                         eventTimes++;
                         consumedItems += consumedItemsPerEvent;
-                        eventEarnedPoints += Math.ceil(earnPointsPerEvent * eventBonus) + earnPointsPerBonusLive;
+                        eventEarnedPoints +=
+                            Math.ceil(earnPointsPerEvent * eventBonus) +
+                            earnPointsPerBonusLive;
                         ownDices += 5;
                         eventBonus = (15 - bonusLiveRemaining) / 10;
                     }
@@ -299,25 +350,77 @@
 
         // すごろくを考慮した通常楽曲回数を計算
         function calculateLiveTimesForSugoroku() {
-            const maxCostMultiplier = isWork ? formValue.ticketCostMultiplier : formValue.staminaCostMultiplier;
-            const maxTimesOf10 = maxCostMultiplier >= 10 ? Math.floor(liveTimes / 10) : 0;
+            const maxCostMultiplier = isWork
+                ? formValue.ticketCostMultiplier
+                : formValue.staminaCostMultiplier;
+            const maxTimesOf10 =
+                maxCostMultiplier >= 10 ? Math.floor(liveTimes / 10) : 0;
             for (let timesOf10 = maxTimesOf10; timesOf10 >= 0; timesOf10--) {
-                const maxTimesOf9 = maxCostMultiplier >= 9 ? Math.floor((liveTimes - timesOf10 * 10) / 9) : 0;
+                const maxTimesOf9 =
+                    maxCostMultiplier >= 9
+                        ? Math.floor((liveTimes - timesOf10 * 10) / 9)
+                        : 0;
                 for (let timesOf9 = maxTimesOf9; timesOf9 >= 0; timesOf9--) {
-                    const maxTimesOf8 = maxCostMultiplier >= 8 ? Math.floor((liveTimes - timesOf10 * 10 - timesOf9 * 9) / 8) : 0;
-                    for (let timesOf8 = maxTimesOf8; timesOf8 >= 0; timesOf8--) {
-                        const maxTimesOf7 = maxCostMultiplier >= 7 ? Math.floor((liveTimes - timesOf10 * 10 - timesOf9 * 9 - timesOf8 * 8) / 7) : 0;
-                        for (let timesOf7 = maxTimesOf7; timesOf7 >= 0; timesOf7--) {
+                    const maxTimesOf8 =
+                        maxCostMultiplier >= 8
+                            ? Math.floor(
+                                  (liveTimes - timesOf10 * 10 - timesOf9 * 9) /
+                                      8
+                              )
+                            : 0;
+                    for (
+                        let timesOf8 = maxTimesOf8;
+                        timesOf8 >= 0;
+                        timesOf8--
+                    ) {
+                        const maxTimesOf7 =
+                            maxCostMultiplier >= 7
+                                ? Math.floor(
+                                      (liveTimes -
+                                          timesOf10 * 10 -
+                                          timesOf9 * 9 -
+                                          timesOf8 * 8) /
+                                          7
+                                  )
+                                : 0;
+                        for (
+                            let timesOf7 = maxTimesOf7;
+                            timesOf7 >= 0;
+                            timesOf7--
+                        ) {
                             const maxTimesOf6 =
                                 maxCostMultiplier >= 6
-                                    ? Math.floor((liveTimes - timesOf10 * 10 - timesOf9 * 9 - timesOf8 * 8 - timesOf7 * 7) / 6)
+                                    ? Math.floor(
+                                          (liveTimes -
+                                              timesOf10 * 10 -
+                                              timesOf9 * 9 -
+                                              timesOf8 * 8 -
+                                              timesOf7 * 7) /
+                                              6
+                                      )
                                     : 0;
-                            for (let timesOf6 = maxTimesOf6; timesOf6 >= 0; timesOf6--) {
+                            for (
+                                let timesOf6 = maxTimesOf6;
+                                timesOf6 >= 0;
+                                timesOf6--
+                            ) {
                                 const maxTimesOf5 =
                                     maxCostMultiplier >= 5
-                                        ? Math.floor((liveTimes - timesOf10 * 10 - timesOf9 * 9 - timesOf8 * 8 - timesOf7 * 7 - timesOf6 * 6) / 5)
+                                        ? Math.floor(
+                                              (liveTimes -
+                                                  timesOf10 * 10 -
+                                                  timesOf9 * 9 -
+                                                  timesOf8 * 8 -
+                                                  timesOf7 * 7 -
+                                                  timesOf6 * 6) /
+                                                  5
+                                          )
                                         : 0;
-                                for (let timesOf5 = maxTimesOf5; timesOf5 >= 0; timesOf5--) {
+                                for (
+                                    let timesOf5 = maxTimesOf5;
+                                    timesOf5 >= 0;
+                                    timesOf5--
+                                ) {
                                     const maxTimesOf4 =
                                         maxCostMultiplier >= 4
                                             ? Math.floor(
@@ -331,7 +434,11 @@
                                                       4
                                               )
                                             : 0;
-                                    for (let timesOf4 = maxTimesOf4; timesOf4 >= 0; timesOf4--) {
+                                    for (
+                                        let timesOf4 = maxTimesOf4;
+                                        timesOf4 >= 0;
+                                        timesOf4--
+                                    ) {
                                         const maxTimesOf3 =
                                             maxCostMultiplier >= 3
                                                 ? Math.floor(
@@ -346,7 +453,11 @@
                                                           3
                                                   )
                                                 : 0;
-                                        for (let timesOf3 = maxTimesOf3; timesOf3 >= 0; timesOf3--) {
+                                        for (
+                                            let timesOf3 = maxTimesOf3;
+                                            timesOf3 >= 0;
+                                            timesOf3--
+                                        ) {
                                             const maxTimesOf2 =
                                                 maxCostMultiplier >= 2
                                                     ? Math.floor(
@@ -362,7 +473,11 @@
                                                               2
                                                       )
                                                     : 0;
-                                            for (let timesOf2 = maxTimesOf2; timesOf2 >= 0; timesOf2--) {
+                                            for (
+                                                let timesOf2 = maxTimesOf2;
+                                                timesOf2 >= 0;
+                                                timesOf2--
+                                            ) {
                                                 const timesOf1 =
                                                     liveTimes -
                                                     timesOf10 * 10 -
@@ -446,14 +561,23 @@
 
         // ミッションを考慮したイベント楽曲回数を計算
         function calculateEventTimesForMission() {
-            const maxTimesOf4 = formValue.itemsCostMultiplier >= 4 ? Math.floor(eventTimes / 4) : 0;
+            const maxTimesOf4 =
+                formValue.itemsCostMultiplier >= 4
+                    ? Math.floor(eventTimes / 4)
+                    : 0;
             for (let timesOf4 = maxTimesOf4; timesOf4 >= 0; timesOf4--) {
-                const maxTimesOf2 = formValue.itemsCostMultiplier >= 2 ? Math.floor((eventTimes - timesOf4 * 4) / 2) : 0;
+                const maxTimesOf2 =
+                    formValue.itemsCostMultiplier >= 2
+                        ? Math.floor((eventTimes - timesOf4 * 4) / 2)
+                        : 0;
                 for (let timesOf2 = maxTimesOf2; timesOf2 >= 0; timesOf2--) {
                     const timesOf1 = eventTimes - timesOf4 * 4 - timesOf2 * 2;
                     if (
                         formValue.mission <= timesOf1 + timesOf2 + timesOf4 &&
-                        sugorokuTarget <= moveSteps - eventTimes * 5 * 3.5 + (timesOf1 + timesOf2 + timesOf4) * 5 * 3.5
+                        sugorokuTarget <=
+                            moveSteps -
+                                eventTimes * 5 * 3.5 +
+                                (timesOf1 + timesOf2 + timesOf4) * 5 * 3.5
                     ) {
                         // 合計がミッション回数以上なら達成可能
                         return {
@@ -483,39 +607,72 @@
                 };
             }
             const workTimes = {
-                consumedStamina: Math.ceil(consumedStamina / formValue.workStaminaCost) * formValue.workStaminaCost,
+                consumedStamina:
+                    Math.ceil(consumedStamina / formValue.workStaminaCost) *
+                    formValue.workStaminaCost,
                 20: 0,
                 25: 0,
                 30: 0,
             };
-            workTimes[formValue.workStaminaCost] = Math.ceil(consumedStamina / formValue.workStaminaCost);
-            const workStaminaCost = [20, 25, 30].filter((cost) => cost !== formValue.workStaminaCost);
-            const maxTimesOfSelected = Math.ceil(consumedStamina / formValue.workStaminaCost);
-            for (let timesOfSelected = maxTimesOfSelected; timesOfSelected >= 0; timesOfSelected--) {
-                const maxTimesOf0 = Math.ceil((consumedStamina - timesOfSelected * formValue.workStaminaCost) / workStaminaCost[0]);
+            workTimes[formValue.workStaminaCost] = Math.ceil(
+                consumedStamina / formValue.workStaminaCost
+            );
+            const workStaminaCost = [20, 25, 30].filter(
+                (cost) => cost !== formValue.workStaminaCost
+            );
+            const maxTimesOfSelected = Math.ceil(
+                consumedStamina / formValue.workStaminaCost
+            );
+            for (
+                let timesOfSelected = maxTimesOfSelected;
+                timesOfSelected >= 0;
+                timesOfSelected--
+            ) {
+                const maxTimesOf0 = Math.ceil(
+                    (consumedStamina -
+                        timesOfSelected * formValue.workStaminaCost) /
+                        workStaminaCost[0]
+                );
                 for (let timesOf0 = maxTimesOf0; timesOf0 >= 0; timesOf0--) {
                     const maxTimesOf1 = Math.ceil(
-                        (consumedStamina - timesOfSelected * formValue.workStaminaCost - timesOf0 * workStaminaCost[0]) / workStaminaCost[1]
+                        (consumedStamina -
+                            timesOfSelected * formValue.workStaminaCost -
+                            timesOf0 * workStaminaCost[0]) /
+                            workStaminaCost[1]
                     );
-                    for (let timesOf1 = maxTimesOf1; timesOf1 >= 0; timesOf1--) {
+                    for (
+                        let timesOf1 = maxTimesOf1;
+                        timesOf1 >= 0;
+                        timesOf1--
+                    ) {
                         const earnedLiveTickets =
-                            timesOfSelected * formValue.workStaminaCost + timesOf0 * workStaminaCost[0] + timesOf1 * workStaminaCost[1];
-                        if (earnedLiveTickets + formValue.liveTickets === consumedStamina) {
+                            timesOfSelected * formValue.workStaminaCost +
+                            timesOf0 * workStaminaCost[0] +
+                            timesOf1 * workStaminaCost[1];
+                        if (
+                            earnedLiveTickets + formValue.liveTickets ===
+                            consumedStamina
+                        ) {
                             // チケット枚数が消費枚数と同じなら無駄ゼロ
                             workTimes.consumedStamina = earnedLiveTickets;
-                            workTimes[formValue.workStaminaCost] = timesOfSelected;
+                            workTimes[formValue.workStaminaCost] =
+                                timesOfSelected;
                             workTimes[workStaminaCost[0]] = timesOf0;
                             workTimes[workStaminaCost[1]] = timesOf1;
                             return workTimes;
                         }
-                        if (earnedLiveTickets + formValue.liveTickets < consumedStamina) {
+                        if (
+                            earnedLiveTickets + formValue.liveTickets <
+                            consumedStamina
+                        ) {
                             // チケット枚数が消費枚数未満なら達成不能
                             continue;
                         }
                         if (earnedLiveTickets < workTimes.consumedStamina) {
                             // チケット枚数が最小なら格納
                             workTimes.consumedStamina = earnedLiveTickets;
-                            workTimes[formValue.workStaminaCost] = timesOfSelected;
+                            workTimes[formValue.workStaminaCost] =
+                                timesOfSelected;
                             workTimes[workStaminaCost[0]] = timesOf0;
                             workTimes[workStaminaCost[1]] = timesOf1;
                         }
@@ -533,9 +690,15 @@
             // お仕事
             let requiredMinutes =
                 0.5 *
-                (Math.ceil(fixedWorkTimes[20] / formValue.staminaCostMultiplier) +
-                    Math.ceil(fixedWorkTimes[25] / formValue.staminaCostMultiplier) +
-                    Math.ceil(fixedWorkTimes[30] / formValue.staminaCostMultiplier));
+                (Math.ceil(
+                    fixedWorkTimes[20] / formValue.staminaCostMultiplier
+                ) +
+                    Math.ceil(
+                        fixedWorkTimes[25] / formValue.staminaCostMultiplier
+                    ) +
+                    Math.ceil(
+                        fixedWorkTimes[30] / formValue.staminaCostMultiplier
+                    ));
             // 通常楽曲
             requiredMinutes +=
                 3 *
@@ -550,7 +713,9 @@
                     fixedLiveTimes[9] +
                     fixedLiveTimes[10]);
             // イベント楽曲
-            requiredMinutes += 3 * (fixedEventTimes[1] + fixedEventTimes[2] + fixedEventTimes[4]);
+            requiredMinutes +=
+                3 *
+                (fixedEventTimes[1] + fixedEventTimes[2] + fixedEventTimes[4]);
             return requiredMinutes;
         }
         const requiredMinutes = calculateRequiredMinutes();
@@ -564,7 +729,9 @@
         // 要回復元気の計算
         let requiredRecoveryStamina = 0;
         if (naturalRecoveryUnix > formValue.datetimeEndUnix) {
-            requiredRecoveryStamina = Math.ceil((naturalRecoveryUnix - formValue.datetimeEndUnix) / 60 / 5);
+            requiredRecoveryStamina = Math.ceil(
+                (naturalRecoveryUnix - formValue.datetimeEndUnix) / 60 / 5
+            );
         }
 
         // 計算結果を格納
@@ -584,27 +751,42 @@
 
         result[course].requiredTime = '';
         if (Math.floor(result[course].requiredMinutes / 60)) {
-            result[course].requiredTime += `${Math.floor(result[course].requiredMinutes / 60)}時間`;
+            result[course].requiredTime += `${Math.floor(
+                result[course].requiredMinutes / 60
+            )}時間`;
         }
         if (Math.ceil(result[course].requiredMinutes % 60)) {
-            result[course].requiredTime += `${Math.ceil(result[course].requiredMinutes % 60)}分`;
+            result[course].requiredTime += `${Math.ceil(
+                result[course].requiredMinutes % 60
+            )}分`;
         }
         if (!result[course].requiredTime) {
             result[course].requiredTime += '0分';
         }
 
         // 所要時間、要回復元気の最小値を格納
-        if (minCost.requiredMinutes === undefined || minCost.requiredMinutes > result[course].requiredMinutes) {
+        if (
+            minCost.requiredMinutes === undefined ||
+            minCost.requiredMinutes > result[course].requiredMinutes
+        ) {
             minCost.requiredMinutes = result[course].requiredMinutes;
         }
-        if (minCost.requiredRecoveryStamina === undefined || minCost.requiredRecoveryStamina > result[course].requiredRecoveryStamina) {
-            minCost.requiredRecoveryStamina = result[course].requiredRecoveryStamina;
+        if (
+            minCost.requiredRecoveryStamina === undefined ||
+            minCost.requiredRecoveryStamina >
+                result[course].requiredRecoveryStamina
+        ) {
+            minCost.requiredRecoveryStamina =
+                result[course].requiredRecoveryStamina;
         }
     }
 
     // 計算結果の表示
     function showResultByCouse(course, formValue, minResult, minCost) {
-        if (formValue.showCourse.length && formValue.showCourse.indexOf(course) === -1) {
+        if (
+            formValue.showCourse.length &&
+            formValue.showCourse.indexOf(course) === -1
+        ) {
             // 表示コースでなければ列を非表示
             $(`.${course}`).hide();
             const level = course.slice(0, 3);
@@ -624,15 +806,27 @@
         let workTimesHtml = '';
         [30, 25, 20]
             .filter((cost) => {
-                return minResult[course].workTimes[cost] || cost === formValue.workStaminaCost;
+                return (
+                    minResult[course].workTimes[cost] ||
+                    cost === formValue.workStaminaCost
+                );
             })
             .forEach((cost) => {
                 if (workTimesHtml) {
                     workTimesHtml += '<br>';
                 }
-                let text = Math.floor(minResult[course].workTimes[cost] / formValue.staminaCostMultiplier).toLocaleString();
-                if (minResult[course].workTimes[cost] % formValue.staminaCostMultiplier) {
-                    text += `…${minResult[course].workTimes[cost] % formValue.staminaCostMultiplier}`;
+                let text = Math.floor(
+                    minResult[course].workTimes[cost] /
+                        formValue.staminaCostMultiplier
+                ).toLocaleString();
+                if (
+                    minResult[course].workTimes[cost] %
+                    formValue.staminaCostMultiplier
+                ) {
+                    text += `…${
+                        minResult[course].workTimes[cost] %
+                        formValue.staminaCostMultiplier
+                    }`;
                 }
                 workTimesHtml +=
                     `<label for="workStaminaCost${course}-${cost}">` +
@@ -664,7 +858,9 @@
                         ` name="ticketCostMultiplier${course}"` +
                         ` id="ticketCostMultiplier${course}-${multiplier}"` +
                         ` value="${multiplier}" />` +
-                        ` [×${multiplier}] ${minResult[course].liveTimes[multiplier].toLocaleString()}` +
+                        ` [×${multiplier}] ${minResult[course].liveTimes[
+                            multiplier
+                        ].toLocaleString()}` +
                         `</label>`;
                 } else {
                     liveTimesHtml +=
@@ -673,7 +869,9 @@
                         ` name="staminaCostMultiplier${course}"` +
                         ` id="staminaCostMultiplier${course}-${multiplier}"` +
                         ` value="${multiplier}" />` +
-                        ` [×${multiplier}] ${minResult[course].liveTimes[multiplier].toLocaleString()}` +
+                        ` [×${multiplier}] ${minResult[course].liveTimes[
+                            multiplier
+                        ].toLocaleString()}` +
                         `</label>`;
                 }
             });
@@ -681,7 +879,10 @@
         let eventTimesHtml = '';
         [4, 2, 1]
             .filter((multiplier) => {
-                return minResult[course].eventTimes[multiplier] || multiplier === formValue.itemsCostMultiplier;
+                return (
+                    minResult[course].eventTimes[multiplier] ||
+                    multiplier === formValue.itemsCostMultiplier
+                );
             })
             .forEach((multiplier) => {
                 if (eventTimesHtml) {
@@ -693,7 +894,9 @@
                     ` name="itemsCostMultiplier${course}"` +
                     ` id="itemsCostMultiplier${course}-${multiplier}"` +
                     ` value="${multiplier}" />` +
-                    ` [×${multiplier}] ${minResult[course].eventTimes[multiplier].toLocaleString()}` +
+                    ` [×${multiplier}] ${minResult[course].eventTimes[
+                        multiplier
+                    ].toLocaleString()}` +
                     `</label>`;
             });
 
@@ -711,15 +914,42 @@
         }
         showResultText('workTimes', workTimesHtml);
         showResultText('liveTimes', liveTimesHtml);
-        showResultText('consumedStamina', minResult[course].consumedStamina.toLocaleString(), false, true);
-        showResultText('naturalRecoveryAt', dayjs.unix(minResult[course].naturalRecoveryUnix).format('M/D H:mm'));
-        showResultText('requiredRecoveryStamina', minResult[course].requiredRecoveryStamina.toLocaleString());
-        showResultText('consumedLiveTickets', minResult[course].consumedLiveTickets.toLocaleString(), '枚');
-        showResultText('liveEarnedPoints', minResult[course].liveEarnedPoints.toLocaleString(), 'pt');
+        showResultText(
+            'consumedStamina',
+            minResult[course].consumedStamina.toLocaleString(),
+            false,
+            true
+        );
+        showResultText(
+            'naturalRecoveryAt',
+            dayjs.unix(minResult[course].naturalRecoveryUnix).format('M/D H:mm')
+        );
+        showResultText(
+            'requiredRecoveryStamina',
+            minResult[course].requiredRecoveryStamina.toLocaleString()
+        );
+        showResultText(
+            'consumedLiveTickets',
+            minResult[course].consumedLiveTickets.toLocaleString(),
+            '枚'
+        );
+        showResultText(
+            'liveEarnedPoints',
+            minResult[course].liveEarnedPoints.toLocaleString(),
+            'pt'
+        );
 
         showResultText('eventTimes', eventTimesHtml);
-        showResultText('consumedItems', minResult[course].consumedItems.toLocaleString(), '個');
-        showResultText('eventEarnedPoints', minResult[course].eventEarnedPoints.toLocaleString(), 'pt');
+        showResultText(
+            'consumedItems',
+            minResult[course].consumedItems.toLocaleString(),
+            '個'
+        );
+        showResultText(
+            'eventEarnedPoints',
+            minResult[course].eventEarnedPoints.toLocaleString(),
+            'pt'
+        );
 
         showResultText('requiredTime', minResult[course].requiredTime);
 
@@ -728,30 +958,46 @@
             [formValue.workStaminaCost, 30, 25, 20].find((cost) => {
                 return minResult[course].workTimes[cost];
             }) || formValue.workStaminaCost;
-        $(`[name="workStaminaCost${course}"][value="${workStaminaCost}"]`).prop('checked', true);
+        $(`[name="workStaminaCost${course}"][value="${workStaminaCost}"]`).prop(
+            'checked',
+            true
+        );
         const staminaCostMultiplier =
             [2, 1].find((multiplier) => {
                 return minResult[course].liveTimes[multiplier];
             }) || formValue.staminaCostMultiplier;
-        $(`[name="staminaCostMultiplier${course}"][value="${staminaCostMultiplier}"]`).prop('checked', true);
+        $(
+            `[name="staminaCostMultiplier${course}"][value="${staminaCostMultiplier}"]`
+        ).prop('checked', true);
         const ticketCostMultiplier =
             [10, 9, 8, 7, 6, 5, 4, 3, 2, 1].find((multiplier) => {
                 return minResult[course].liveTimes[multiplier];
             }) || formValue.ticketCostMultiplier;
-        $(`[name="ticketCostMultiplier${course}"][value="${ticketCostMultiplier}"]`).prop('checked', true);
+        $(
+            `[name="ticketCostMultiplier${course}"][value="${ticketCostMultiplier}"]`
+        ).prop('checked', true);
         const itemsCostMultiplier =
             [4, 2, 1].find((multiplier) => {
                 return minResult[course].eventTimes[multiplier];
             }) || formValue.itemsCostMultiplier;
-        $(`[name="itemsCostMultiplier${course}"][value="${itemsCostMultiplier}"]`).prop('checked', true);
+        $(
+            `[name="itemsCostMultiplier${course}"][value="${itemsCostMultiplier}"]`
+        ).prop('checked', true);
 
         // 所要時間、要回復元気の最小値は青文字
-        if (formValue.showCourse.length !== 1 && minResult[course].requiredMinutes === minCost.requiredMinutes) {
+        if (
+            formValue.showCourse.length !== 1 &&
+            minResult[course].requiredMinutes === minCost.requiredMinutes
+        ) {
             $(`#requiredTime${course}`).addClass('info');
         } else {
             $(`#requiredTime${course}`).removeClass('info');
         }
-        if (formValue.showCourse.length !== 1 && minResult[course].requiredRecoveryStamina === minCost.requiredRecoveryStamina) {
+        if (
+            formValue.showCourse.length !== 1 &&
+            minResult[course].requiredRecoveryStamina ===
+                minCost.requiredRecoveryStamina
+        ) {
             $(`#requiredRecoveryStamina${course}`).addClass('info');
         } else {
             $(`#requiredRecoveryStamina${course}`).removeClass('info');
@@ -763,7 +1009,12 @@
         } else {
             $(`#naturalRecoveryAt${course}`).removeClass('danger');
         }
-        if (dayjs.unix(formValue.nowUnix).add(minResult[course].requiredMinutes, 'm').unix() > formValue.datetimeEndUnix) {
+        if (
+            dayjs
+                .unix(formValue.nowUnix)
+                .add(minResult[course].requiredMinutes, 'm')
+                .unix() > formValue.datetimeEndUnix
+        ) {
             $(`#requiredTime${course}`).addClass('danger');
         } else {
             $(`#requiredTime${course}`).removeClass('danger');
@@ -815,9 +1066,13 @@
             idolRemaining: $('#idolRemaining').val(),
             bonusLiveRemaining: $('#bonusLiveRemaining').val(),
             workStaminaCost: $('[name="workStaminaCost"]:checked').val(),
-            staminaCostMultiplier: $('[name="staminaCostMultiplier"]:checked').val(),
+            staminaCostMultiplier: $(
+                '[name="staminaCostMultiplier"]:checked'
+            ).val(),
             ticketCostMultiplier: $('#ticketCostMultiplier').val(),
-            itemsCostMultiplier: $('[name="itemsCostMultiplier"]:checked').val(),
+            itemsCostMultiplier: $(
+                '[name="itemsCostMultiplier"]:checked'
+            ).val(),
             showCourse: $('[name="showCourse"]:checked')
                 .map((i) => {
                     return $('[name="showCourse"]:checked').eq(i).val();
@@ -880,7 +1135,9 @@
     });
     $('#showCourse-all').change(() => {
         $('[name="showCourse"]').each((i) => {
-            $('[name="showCourse"]').eq(i).prop('checked', $('#showCourse-all').prop('checked'));
+            $('[name="showCourse"]')
+                .eq(i)
+                .prop('checked', $('#showCourse-all').prop('checked'));
         });
         calculate();
     });
@@ -893,8 +1150,16 @@
         const course = $(this).val();
         const formValue = getFormValue();
 
-        $('#stamina').val(formValue.stamina + formValue.inTable.workStaminaCost[course] * formValue.staminaCostMultiplier);
-        $('#liveTickets').val(formValue.liveTickets - formValue.inTable.workStaminaCost[course] * formValue.staminaCostMultiplier);
+        $('#stamina').val(
+            formValue.stamina +
+                formValue.inTable.workStaminaCost[course] *
+                    formValue.staminaCostMultiplier
+        );
+        $('#liveTickets').val(
+            formValue.liveTickets -
+                formValue.inTable.workStaminaCost[course] *
+                    formValue.staminaCostMultiplier
+        );
 
         calculate();
     });
@@ -903,11 +1168,19 @@
         const course = $(this).val();
         const formValue = getFormValue();
 
-        if (formValue.liveTickets + formValue.inTable.workStaminaCost[course] * formValue.staminaCostMultiplier > 500) {
+        if (
+            formValue.liveTickets +
+                formValue.inTable.workStaminaCost[course] *
+                    formValue.staminaCostMultiplier >
+            500
+        ) {
             if (
                 confirm(
                     `ライブチケットが${
-                        formValue.liveTickets + formValue.inTable.workStaminaCost[course] * formValue.staminaCostMultiplier - 500
+                        formValue.liveTickets +
+                        formValue.inTable.workStaminaCost[course] *
+                            formValue.staminaCostMultiplier -
+                        500
                     }枚超過します。\n超過分は加算されません。\n実行しますか？`
                 )
             ) {
@@ -916,10 +1189,18 @@
                 return;
             }
         } else {
-            $('#liveTickets').val(formValue.liveTickets + formValue.inTable.workStaminaCost[course] * formValue.staminaCostMultiplier);
+            $('#liveTickets').val(
+                formValue.liveTickets +
+                    formValue.inTable.workStaminaCost[course] *
+                        formValue.staminaCostMultiplier
+            );
         }
 
-        $('#stamina').val(formValue.stamina - formValue.inTable.workStaminaCost[course] * formValue.staminaCostMultiplier);
+        $('#stamina').val(
+            formValue.stamina -
+                formValue.inTable.workStaminaCost[course] *
+                    formValue.staminaCostMultiplier
+        );
 
         calculate();
     });
@@ -928,9 +1209,26 @@
         const course = $(this).val();
         const formValue = getFormValue();
 
-        $('#liveTickets').val(formValue.liveTickets + staminaCost[course] * formValue.inTable.ticketCostMultiplier[course]);
-        $('#ownPoints').val(formValue.ownPoints - Math.ceil(points[course] * formValue.eventBonus * formValue.inTable.ticketCostMultiplier[course]));
-        $('#ownItems').val(formValue.ownItems - Math.ceil(points[course] * formValue.inTable.ticketCostMultiplier[course]));
+        $('#liveTickets').val(
+            formValue.liveTickets +
+                staminaCost[course] *
+                    formValue.inTable.ticketCostMultiplier[course]
+        );
+        $('#ownPoints').val(
+            formValue.ownPoints -
+                Math.ceil(
+                    points[course] *
+                        formValue.eventBonus *
+                        formValue.inTable.ticketCostMultiplier[course]
+                )
+        );
+        $('#ownItems').val(
+            formValue.ownItems -
+                Math.ceil(
+                    points[course] *
+                        formValue.inTable.ticketCostMultiplier[course]
+                )
+        );
         $('#ownDices').val(formValue.ownDices - 4);
 
         calculate();
@@ -940,9 +1238,26 @@
         const course = $(this).val();
         const formValue = getFormValue();
 
-        $('#liveTickets').val(formValue.liveTickets - staminaCost[course] * formValue.inTable.ticketCostMultiplier[course]);
-        $('#ownPoints').val(formValue.ownPoints + Math.ceil(points[course] * formValue.eventBonus * formValue.inTable.ticketCostMultiplier[course]));
-        $('#ownItems').val(formValue.ownItems + Math.ceil(points[course] * formValue.inTable.ticketCostMultiplier[course]));
+        $('#liveTickets').val(
+            formValue.liveTickets -
+                staminaCost[course] *
+                    formValue.inTable.ticketCostMultiplier[course]
+        );
+        $('#ownPoints').val(
+            formValue.ownPoints +
+                Math.ceil(
+                    points[course] *
+                        formValue.eventBonus *
+                        formValue.inTable.ticketCostMultiplier[course]
+                )
+        );
+        $('#ownItems').val(
+            formValue.ownItems +
+                Math.ceil(
+                    points[course] *
+                        formValue.inTable.ticketCostMultiplier[course]
+                )
+        );
         $('#ownDices').val(formValue.ownDices + 4);
 
         calculate();
@@ -952,9 +1267,23 @@
         const course = $(this).val();
         const formValue = getFormValue();
 
-        $('#stamina').val(formValue.stamina + staminaCost[course] * formValue.inTable.staminaCostMultiplier[course]);
-        $('#ownPoints').val(formValue.ownPoints - Math.ceil(points[course] * formValue.eventBonus * formValue.inTable.staminaCostMultiplier[course]));
-        $('#ownItems').val(formValue.ownItems - points[course] * formValue.inTable.staminaCostMultiplier[course]);
+        $('#stamina').val(
+            formValue.stamina +
+                staminaCost[course] *
+                    formValue.inTable.staminaCostMultiplier[course]
+        );
+        $('#ownPoints').val(
+            formValue.ownPoints -
+                Math.ceil(
+                    points[course] *
+                        formValue.eventBonus *
+                        formValue.inTable.staminaCostMultiplier[course]
+                )
+        );
+        $('#ownItems').val(
+            formValue.ownItems -
+                points[course] * formValue.inTable.staminaCostMultiplier[course]
+        );
         $('#ownDices').val(formValue.ownDices - 4);
 
         calculate();
@@ -964,9 +1293,23 @@
         const course = $(this).val();
         const formValue = getFormValue();
 
-        $('#stamina').val(formValue.stamina - staminaCost[course] * formValue.inTable.staminaCostMultiplier[course]);
-        $('#ownPoints').val(formValue.ownPoints + Math.ceil(points[course] * formValue.eventBonus * formValue.inTable.staminaCostMultiplier[course]));
-        $('#ownItems').val(formValue.ownItems + points[course] * formValue.inTable.staminaCostMultiplier[course]);
+        $('#stamina').val(
+            formValue.stamina -
+                staminaCost[course] *
+                    formValue.inTable.staminaCostMultiplier[course]
+        );
+        $('#ownPoints').val(
+            formValue.ownPoints +
+                Math.ceil(
+                    points[course] *
+                        formValue.eventBonus *
+                        formValue.inTable.staminaCostMultiplier[course]
+                )
+        );
+        $('#ownItems').val(
+            formValue.ownItems +
+                points[course] * formValue.inTable.staminaCostMultiplier[course]
+        );
         $('#ownDices').val(formValue.ownDices + 4);
 
         calculate();
@@ -976,9 +1319,18 @@
         const course = $(this).val();
         const formValue = getFormValue();
 
-        $('#ownItems').val(formValue.ownItems + consumedItemsPerEvent * formValue.inTable.itemsCostMultiplier[course]);
+        $('#ownItems').val(
+            formValue.ownItems +
+                consumedItemsPerEvent *
+                    formValue.inTable.itemsCostMultiplier[course]
+        );
         $('#ownPoints').val(
-            formValue.ownPoints - Math.ceil(earnPointsPerEvent * formValue.eventBonus * formValue.inTable.itemsCostMultiplier[course])
+            formValue.ownPoints -
+                Math.ceil(
+                    earnPointsPerEvent *
+                        formValue.eventBonus *
+                        formValue.inTable.itemsCostMultiplier[course]
+                )
         );
         $('#ownDices').val(formValue.ownDices - 5);
         $('#mission').val(formValue.mission + 1);
@@ -990,9 +1342,18 @@
         const course = $(this).val();
         const formValue = getFormValue();
 
-        $('#ownItems').val(formValue.ownItems - consumedItemsPerEvent * formValue.inTable.itemsCostMultiplier[course]);
+        $('#ownItems').val(
+            formValue.ownItems -
+                consumedItemsPerEvent *
+                    formValue.inTable.itemsCostMultiplier[course]
+        );
         $('#ownPoints').val(
-            formValue.ownPoints + Math.ceil(earnPointsPerEvent * formValue.eventBonus * formValue.inTable.itemsCostMultiplier[course])
+            formValue.ownPoints +
+                Math.ceil(
+                    earnPointsPerEvent *
+                        formValue.eventBonus *
+                        formValue.inTable.itemsCostMultiplier[course]
+                )
         );
         $('#ownDices').val(formValue.ownDices + 5);
         $('#mission').val(formValue.mission - 1);
@@ -1022,8 +1383,12 @@
 
     // 入力を初期化ボタン
     function defaultInput() {
-        $('#datetimeStart').val(dayjs().subtract(15, 'h').format('YYYY-MM-DDT15:00'));
-        $('#datetimeEnd').val(dayjs().subtract(15, 'h').add(1, 'w').format('YYYY-MM-DDT20:59'));
+        $('#datetimeStart').val(
+            dayjs().subtract(15, 'h').format('YYYY-MM-DDT15:00')
+        );
+        $('#datetimeEnd').val(
+            dayjs().subtract(15, 'h').add(1, 'w').format('YYYY-MM-DDT20:59')
+        );
         $('#targetEnd').val(30000);
         $('#now').val(dayjs().format('YYYY-MM-DDTHH:mm'));
         $('#isNow').prop('checked', true);
@@ -1042,9 +1407,18 @@
         $('[name="itemsCostMultiplier"][value="1"]').prop('checked', true);
         $('[name="showCourse"]').each((i) => {
             if (
-                ['_2m_live', '_2m_work', '_4m_live', '_4m_work', '_2p_live', '_2p_work', '_6m_live', '_6m_work', '_mm_live', '_mm_work'].indexOf(
-                    $('[name="showCourse"]').eq(i).val()
-                ) !== -1
+                [
+                    '_2m_live',
+                    '_2m_work',
+                    '_4m_live',
+                    '_4m_work',
+                    '_2p_live',
+                    '_2p_work',
+                    '_6m_live',
+                    '_6m_work',
+                    '_mm_live',
+                    '_mm_work',
+                ].indexOf($('[name="showCourse"]').eq(i).val()) !== -1
             ) {
                 $('[name="showCourse"]').eq(i).prop('checked', true);
             } else {
@@ -1082,13 +1456,23 @@
         $('#sugorokuRemaining').val(savedData.sugorokuRemaining);
         $('#idolRemaining').val(savedData.idolRemaining);
         $('#bonusLiveRemaining').val(savedData.bonusLiveRemaining);
-        $(`[name="workStaminaCost"][value="${savedData.workStaminaCost}"]`).prop('checked', true);
-        $(`[name="staminaCostMultiplier"][value="${savedData.staminaCostMultiplier}"]`).prop('checked', true);
+        $(
+            `[name="workStaminaCost"][value="${savedData.workStaminaCost}"]`
+        ).prop('checked', true);
+        $(
+            `[name="staminaCostMultiplier"][value="${savedData.staminaCostMultiplier}"]`
+        ).prop('checked', true);
         $('#ticketCostMultiplier').val(savedData.ticketCostMultiplier);
-        $(`[name="itemsCostMultiplier"][value="${savedData.itemsCostMultiplier}"]`).prop('checked', true);
+        $(
+            `[name="itemsCostMultiplier"][value="${savedData.itemsCostMultiplier}"]`
+        ).prop('checked', true);
         $('#showCourse-all').prop('checked', true);
         $('[name="showCourse"]').each((i) => {
-            if (savedData.showCourse.indexOf($('[name="showCourse"]').eq(i).val()) !== -1) {
+            if (
+                savedData.showCourse.indexOf(
+                    $('[name="showCourse"]').eq(i).val()
+                ) !== -1
+            ) {
                 $('[name="showCourse"]').eq(i).prop('checked', true);
             } else {
                 $('[name="showCourse"]').eq(i).prop('checked', false);
