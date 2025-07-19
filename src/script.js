@@ -35,8 +35,21 @@
 
     // イベント楽曲の設定
     const consumedItemsPerEvent = 180;
-    const earnPointsPerEvent = 537;
+    const earnPointsPerEvent = 618;
     const earnPointsPerBonusLive = 4000;
+
+    // すごろくの設定
+    const areaSpace = 30;
+    const talkSpace = 7;
+
+    function calcEventBonus(lap) {
+        if (lap < 1) return 1;
+        if (lap < 3) return 1.1;
+        if (lap < 5) return 1.2;
+        if (lap < 7) return 1.3;
+        if (lap < 9) return 1.4;
+        return 1.5;
+    }
 
     // 入力値の取得
     function getFormValue() {
@@ -108,8 +121,9 @@
         validSafeInteger('mission');
         validSafeInteger('ownDices');
         validSafeInteger('sugorokuRemaining');
+        validSafeInteger('lap');
         validSafeInteger('bonusLiveRemaining');
-        formValue.eventBonus = (15 - formValue.bonusLiveRemaining) / 10;
+        formValue.eventBonus = calcEventBonus(formValue.lap);
 
         function validFiniteNumber(field) {
             const inputValue = $(`#${field}`).val();
@@ -281,6 +295,7 @@
         let ownItems = formValue.ownItems + formValue.loginBonus;
         let ownDices = formValue.ownDices;
         let sugorokuRemaining = formValue.sugorokuRemaining;
+        let lap = formValue.lap;
         let bonusLiveRemaining = formValue.bonusLiveRemaining;
         let eventBonus = formValue.eventBonus;
 
@@ -294,8 +309,9 @@
 
         // アイドルトーキング達成までに必要なマスを計算
         // 残りトークは残り人数の5倍
-        // エリア39マスのうちトークマスは13なので、必要マスはトークマスの平均3倍
-        const sugorokuTarget = formValue.idolRemaining * 5 * 3;
+        // 必要マスの平均はエリアマス/トークマス
+        const sugorokuTarget =
+            (formValue.idolRemaining * 5 * areaSpace) / talkSpace;
 
         // 通常楽曲回数、イベント楽曲回数を計算
         while (
@@ -308,28 +324,25 @@
             if (ownDices >= 1) {
                 // サイコロを所持している場合、ミリオンすごろく
                 ownDices--;
-                if (sugorokuRemaining < 3.5) {
-                    moveSteps += sugorokuRemaining;
-                    sugorokuRemaining -= sugorokuRemaining;
-                } else {
-                    moveSteps += 3.5;
-                    sugorokuRemaining -= 3.5; // 期待値(1～6の平均値)
-                }
+                moveSteps += 3.5;
+                sugorokuRemaining -= 3.5; // 期待値(1～6の平均値)
                 if (sugorokuRemaining <= 0) {
                     // ゴールした場合
-                    if (bonusLiveRemaining >= 1) {
-                        // ボーナスライブが残っている場合、ボーナスライブ
-                        bonusLiveRemaining--;
-                        eventTimes++;
-                        consumedItems += consumedItemsPerEvent;
-                        eventEarnedPoints +=
-                            Math.ceil(earnPointsPerEvent * eventBonus) +
-                            earnPointsPerBonusLive;
-                        ownDices += 5;
-                        eventBonus = (15 - bonusLiveRemaining) / 10;
+                    if (
+                        lap === 2 ||
+                        lap === 4 ||
+                        lap === 6 ||
+                        lap === 8 ||
+                        lap === 10
+                    ) {
+                        // 周回報酬
+                        ownItems += consumedItemsPerEvent;
+                        bonusLiveRemaining++;
                     }
+                    lap++;
+                    eventBonus = calcEventBonus(lap);
                     // スタートに戻る
-                    sugorokuRemaining = 39;
+                    sugorokuRemaining += areaSpace;
                 }
             } else if (ownItems >= consumedItemsPerEvent) {
                 // アイテムを所持している場合、イベント楽曲
@@ -338,6 +351,12 @@
                 consumedItems += consumedItemsPerEvent;
                 eventEarnedPoints += Math.ceil(earnPointsPerEvent * eventBonus);
                 ownDices += 5;
+                if (bonusLiveRemaining >= 1) {
+                    // ボーナスライブが残っている場合、ボーナスライブ
+                    bonusLiveRemaining--;
+                    eventEarnedPoints += earnPointsPerBonusLive;
+                    ownItems += consumedItemsPerEvent;
+                }
             } else {
                 // アイテムを所持していない場合、ライブ
                 liveTimes++;
@@ -1064,6 +1083,7 @@
             ownDices: $('#ownDices').val(),
             sugorokuRemaining: $('#sugorokuRemaining').val(),
             idolRemaining: $('#idolRemaining').val(),
+            lap: $('#lap').val(),
             bonusLiveRemaining: $('#bonusLiveRemaining').val(),
             workStaminaCost: $('[name="workStaminaCost"]:checked').val(),
             staminaCostMultiplier: $(
@@ -1119,6 +1139,7 @@
     $('#ownDices').change(calculate);
     $('#sugorokuRemaining').change(calculate);
     $('#idolRemaining').change(calculate);
+    $('#lap').change(calculate);
     $('#bonusLiveRemaining').change(calculate);
     $('[name="workStaminaCost"]').change(calculate);
     $('[name="staminaCostMultiplier"]').change(calculate);
@@ -1368,7 +1389,7 @@
         const formValue = getFormValue();
 
         if (formValue.sugorokuRemaining - diceSpot <= 0) {
-            $('#sugorokuRemaining').val(39);
+            $('#sugorokuRemaining').val(areaSpace);
         } else {
             $('#sugorokuRemaining').val(formValue.sugorokuRemaining - diceSpot);
         }
@@ -1398,9 +1419,10 @@
         $('#ownItems').val(0);
         $('#mission').val(30);
         $('#ownDices').val(0);
-        $('#sugorokuRemaining').val(39);
+        $('#sugorokuRemaining').val(areaSpace);
         $('#idolRemaining').val(52);
-        $('#bonusLiveRemaining').val(5);
+        $('#lap').val(1);
+        $('#bonusLiveRemaining').val(0);
         $('[name="workStaminaCost"][value="20"]').prop('checked', true);
         $('[name="staminaCostMultiplier"][value="1"]').prop('checked', true);
         $('#ticketCostMultiplier').val(10);
@@ -1455,6 +1477,7 @@
         $('#ownDices').val(savedData.ownDices);
         $('#sugorokuRemaining').val(savedData.sugorokuRemaining);
         $('#idolRemaining').val(savedData.idolRemaining);
+        $('#lap').val(savedData.lap);
         $('#bonusLiveRemaining').val(savedData.bonusLiveRemaining);
         $(
             `[name="workStaminaCost"][value="${savedData.workStaminaCost}"]`
