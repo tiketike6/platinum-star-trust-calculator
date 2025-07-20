@@ -51,11 +51,11 @@
 
     // pt獲得ボーナスを計算
     function calcEventBonus(lap) {
-        if (lap < 1) return 1;
-        if (lap < 3) return 1.1;
-        if (lap < 5) return 1.2;
-        if (lap < 7) return 1.3;
-        if (lap < 9) return 1.4;
+        if (lap <= 1) return 1;
+        if (lap <= 3) return 1.1;
+        if (lap <= 5) return 1.2;
+        if (lap <= 7) return 1.3;
+        if (lap <= 9) return 1.4;
         return 1.5;
     }
 
@@ -1431,6 +1431,25 @@
         );
         $('#ownDices').val(formValue.ownDices + 5);
         $('#mission').val(formValue.mission - 1);
+
+        if (formValue.bonusLiveRemaining >= 1) {
+            $('#bonusLiveRemaining').val(formValue.bonusLiveRemaining - 1);
+            $('#ownPoints').val(
+                formValue.ownPoints +
+                    Math.ceil(
+                        earnPointsPerEvent *
+                            formValue.eventBonus *
+                            formValue.inTable.itemsCostMultiplier[course]
+                    ) +
+                    earnPointsPerBonusLive
+            );
+            $('#ownItems').val(
+                formValue.ownItems -
+                    consumedItemsPerEvent *
+                        formValue.inTable.itemsCostMultiplier[course] +
+                    consumedItemsPerEvent
+            );
+        }
 
         calculate();
     });
