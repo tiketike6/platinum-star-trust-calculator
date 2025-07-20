@@ -42,6 +42,14 @@
     const areaSpace = 30;
     const talkSpace = 7;
 
+    // アイドルトーキングの残りを計算
+    function calcIdolRemaining(idolTarget, lap) {
+        const result = idolTarget * 5 - talkSpace * (lap - 1);
+        if (result < 0) return 0;
+        return result / 5;
+    }
+
+    // pt獲得ボーナスを計算
     function calcEventBonus(lap) {
         if (lap < 1) return 1;
         if (lap < 3) return 1.1;
@@ -120,28 +128,14 @@
         validSafeInteger('ownItems');
         validSafeInteger('mission');
         validSafeInteger('ownDices');
-        validSafeInteger('sugorokuRemaining');
+        validSafeInteger('idolTarget');
         validSafeInteger('lap');
         validSafeInteger('bonusLiveRemaining');
+        formValue.idolRemaining = calcIdolRemaining(
+            formValue.idolTarget,
+            formValue.lap
+        );
         formValue.eventBonus = calcEventBonus(formValue.lap);
-
-        function validFiniteNumber(field) {
-            const inputValue = $(`#${field}`).val();
-            if (!inputValue) {
-                errors.push({
-                    field: field,
-                    message: '必須です。',
-                });
-            } else if (!Number.isFinite(Number(inputValue))) {
-                errors.push({
-                    field: field,
-                    message: '有効な値ではありません。',
-                });
-            } else {
-                formValue[field] = Number(inputValue);
-            }
-        }
-        validFiniteNumber('idolRemaining');
 
         formValue.workStaminaCost = Number(
             $('[name="workStaminaCost"]:checked').val()
@@ -267,6 +261,10 @@
         );
         formValue.loginBonusDices = loginBonusDices;
 
+        $('#idolRemaining').text(
+            `(目標まであと ${formValue.idolRemaining.toFixed(1)} 人)`
+        );
+
         $('#eventBonus').text(
             `(pt獲得ボーナス ×${formValue.eventBonus.toFixed(1)})`
         );
@@ -294,7 +292,7 @@
 
         let ownItems = formValue.ownItems + formValue.loginBonus;
         let ownDices = formValue.ownDices;
-        let sugorokuRemaining = formValue.sugorokuRemaining;
+        let sugorokuRemaining = areaSpace;
         let lap = formValue.lap;
         let bonusLiveRemaining = formValue.bonusLiveRemaining;
         let eventBonus = formValue.eventBonus;
@@ -1081,8 +1079,7 @@
             ownItems: $('#ownItems').val(),
             mission: $('#mission').val(),
             ownDices: $('#ownDices').val(),
-            sugorokuRemaining: $('#sugorokuRemaining').val(),
-            idolRemaining: $('#idolRemaining').val(),
+            idolTarget: $('#idolTarget').val(),
             lap: $('#lap').val(),
             bonusLiveRemaining: $('#bonusLiveRemaining').val(),
             workStaminaCost: $('[name="workStaminaCost"]:checked').val(),
@@ -1137,8 +1134,7 @@
     $('#ownPoints').change(calculate);
     $('#mission').change(calculate);
     $('#ownDices').change(calculate);
-    $('#sugorokuRemaining').change(calculate);
-    $('#idolRemaining').change(calculate);
+    $('#idolTarget').change(calculate);
     $('#lap').change(calculate);
     $('#bonusLiveRemaining').change(calculate);
     $('[name="workStaminaCost"]').change(calculate);
@@ -1166,6 +1162,63 @@
     $('#autoSave').change(calculate);
 
     // 回数増減ボタン
+    $('.beforeLap').click(() => {
+        const formValue = getFormValue();
+        const beforeLap = formValue.lap - 1;
+
+        if (
+            beforeLap === 2 ||
+            beforeLap === 4 ||
+            beforeLap === 6 ||
+            beforeLap === 8 ||
+            beforeLap === 10
+        ) {
+            // 周回報酬
+            $('#ownItems').val(formValue.ownItems - consumedItemsPerEvent);
+            $('#bonusLiveRemaining').val(formValue.bonusLiveRemaining - 1);
+        }
+
+        $('#lap').val(beforeLap);
+
+        calculate();
+    });
+    $('.afterLap').click(() => {
+        const formValue = getFormValue();
+
+        if (
+            formValue.lap === 2 ||
+            formValue.lap === 4 ||
+            formValue.lap === 6 ||
+            formValue.lap === 8 ||
+            formValue.lap === 10
+        ) {
+            // 周回報酬
+            $('#ownItems').val(formValue.ownItems + consumedItemsPerEvent);
+            $('#bonusLiveRemaining').val(formValue.bonusLiveRemaining + 1);
+        }
+
+        $('#lap').val(formValue.lap + 1);
+
+        calculate();
+    });
+    $('.beforPlayBonus').click(() => {
+        const formValue = getFormValue();
+
+        $('#bonusLiveRemaining').val(formValue.bonusLiveRemaining + 1);
+        $('#ownPoints').val(formValue.ownPoints - earnPointsPerBonusLive);
+        $('#ownItems').val(formValue.ownItems - consumedItemsPerEvent);
+
+        calculate();
+    });
+    $('.afterPlayBonus').click(() => {
+        const formValue = getFormValue();
+
+        $('#bonusLiveRemaining').val(formValue.bonusLiveRemaining - 1);
+        $('#ownPoints').val(formValue.ownPoints + earnPointsPerBonusLive);
+        $('#ownItems').val(formValue.ownItems + consumedItemsPerEvent);
+
+        calculate();
+    });
     $('.beforePlayWork').click(function () {
         // eslint-disable-next-line no-invalid-this
         const course = $(this).val();
@@ -1382,23 +1435,6 @@
         calculate();
     });
 
-    // サイコロボタン
-    $('.goSugoroku').click(function () {
-        // eslint-disable-next-line no-invalid-this
-        const diceSpot = $(this).val();
-        const formValue = getFormValue();
-
-        if (formValue.sugorokuRemaining - diceSpot <= 0) {
-            $('#sugorokuRemaining').val(areaSpace);
-        } else {
-            $('#sugorokuRemaining').val(formValue.sugorokuRemaining - diceSpot);
-        }
-
-        $('#ownDices').val(formValue.ownDices - 1);
-
-        calculate();
-    });
-
     // 保存ボタン
     $('#save').click(save);
 
@@ -1419,8 +1455,7 @@
         $('#ownItems').val(0);
         $('#mission').val(30);
         $('#ownDices').val(0);
-        $('#sugorokuRemaining').val(areaSpace);
-        $('#idolRemaining').val(52);
+        $('#idolTarget').val(52);
         $('#lap').val(1);
         $('#bonusLiveRemaining').val(0);
         $('[name="workStaminaCost"][value="20"]').prop('checked', true);
@@ -1475,8 +1510,7 @@
         $('#ownItems').val(savedData.ownItems);
         $('#mission').val(savedData.mission);
         $('#ownDices').val(savedData.ownDices);
-        $('#sugorokuRemaining').val(savedData.sugorokuRemaining);
-        $('#idolRemaining').val(savedData.idolRemaining);
+        $('#idolTarget').val(savedData.idolTarget);
         $('#lap').val(savedData.lap);
         $('#bonusLiveRemaining').val(savedData.bonusLiveRemaining);
         $(

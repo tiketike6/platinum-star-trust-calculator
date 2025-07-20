@@ -92,69 +92,43 @@
                 </td>
             </tr>
             <tr>
-                <td>ミリオンすごろく</td>
-                <td>:</td>
-                <td>
-                    ゴールまであと
-                    <input
-                        type="number"
-                        id="sugorokuRemaining"
-                        style="width: 3em"
-                    />
-                    マス
-                    <button class="goSugoroku" value="1" title="1マス進む">
-                        <span>⚀</span>
-                    </button>
-                    <button class="goSugoroku" value="2" title="2マス進む">
-                        <span>⚁</span>
-                    </button>
-                    <button class="goSugoroku" value="3" title="3マス進む">
-                        <span>⚂</span>
-                    </button>
-                    <button class="goSugoroku" value="4" title="4マス進む">
-                        <span>⚃</span>
-                    </button>
-                    <button class="goSugoroku" value="5" title="5マス進む">
-                        <span>⚄</span>
-                    </button>
-                    <button class="goSugoroku" value="6" title="6マス進む">
-                        <span>⚅</span>
-                    </button>
-                </td>
-            </tr>
-            <tr>
                 <td>アイドルトーキング</td>
                 <td>:</td>
                 <td>
-                    目標まであと
+                    目標
                     <input
                         type="number"
-                        id="idolRemaining"
-                        style="width: 4em"
+                        id="idolTarget"
+                        style="width: 3em"
                         step="0.2"
                     />
-                    人
+                    人 <span id="idolRemaining"> </span>
                 </td>
             </tr>
             <tr>
                 <td>周回数</td>
                 <td>:</td>
                 <td>
+                    <button class="beforePlay beforeLap">←</button>
                     <input type="number" id="lap" style="width: 3em" />
-                    周目 <span id="eventBonus"> </span>
+                    周目
+                    <button class="afterPlay afterLap">→</button>
+                    <span id="eventBonus"> </span>
                 </td>
             </tr>
             <tr>
                 <td>ボーナスライブ</td>
                 <td>:</td>
                 <td>
+                    <button class="beforePlay beforPlayBonus">←</button>
                     あと
                     <input
                         type="number"
                         id="bonusLiveRemaining"
                         style="width: 2em"
                     />
-                    回可能 </span>
+                    回可能
+                    <button class="afterPlay afterPlayBonus">→</button>
                 </td>
             </tr>
             <tr>
